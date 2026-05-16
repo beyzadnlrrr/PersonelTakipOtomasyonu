@@ -71,6 +71,12 @@ namespace PersonelTakip
         {
             try
             {
+                if (txtTC.Text.Length != 11 || !long.TryParse(txtTC.Text, out _))
+                {
+                    MessageBox.Show("TC Kimlik Numarası tam olarak 11 haneli ve sadece rakamlardan oluşmalıdır!", "Hatalı Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return; // Kodun aşağıya devam etmesini engeller, işlemi burada keser.
+                }
+
                 if (baglanti.State == ConnectionState.Closed) baglanti.Open();
 
                 // 1. SQL Sorgusunu Güncelledik: Departman sütununu ve @p5 parametresini ekledik
