@@ -30,7 +30,7 @@ namespace PersonelTakip
 
             while (dr.Read())
             {
-                // Departman adını ComboBox'a ekliyoruz
+               
                 cmbDepartman.Items.Add(dr["DepAd"].ToString());
             }
 
@@ -40,21 +40,21 @@ namespace PersonelTakip
         {
             try
             {
-                // Eğer kapı kapalıysa açalım
+             
                 if (baglanti.State == ConnectionState.Closed)
                     baglanti.Open();
 
-                // SQL'e "Personeller tablosundaki her şeyi bana getir" diyoruz
+               
                 SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM Personeller", baglanti);
 
-                // Gelen verileri geçici olarak tutacak bir tablo (DataTable) oluşturuyoruz
+           
                 DataTable dt = new DataTable();
-                da.Fill(dt); // Verileri bu tablonun içine doldur
+                da.Fill(dt); 
 
-                // Formdaki o gri tabloya (dataGridView1) "Senin kaynağın bu tablo" diyoruz
+               
                 dataGridView1.DataSource = dt;
 
-                baglanti.Close(); // İşimiz bitti, kapıyı kapatalım
+                baglanti.Close(); 
             }
             catch (Exception hata)
             {
@@ -74,12 +74,12 @@ namespace PersonelTakip
                 if (txtTC.Text.Length != 11 || !long.TryParse(txtTC.Text, out _))
                 {
                     MessageBox.Show("TC Kimlik Numarası tam olarak 11 haneli ve sadece rakamlardan oluşmalıdır!", "Hatalı Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; // Kodun aşağıya devam etmesini engeller, işlemi burada keser.
+                    return; 
                 }
 
                 if (baglanti.State == ConnectionState.Closed) baglanti.Open();
 
-                // 1. SQL Sorgusunu Güncelledik: Departman sütununu ve @p5 parametresini ekledik
+               
                 SqlCommand komut = new SqlCommand("INSERT INTO Personeller (Ad, Soyad, TCNo, Maas, Departman) VALUES (@p1, @p2, @p3, @p4, @p5)", baglanti);
 
                 komut.Parameters.AddWithValue("@p1", txtAd.Text);
@@ -87,14 +87,14 @@ namespace PersonelTakip
                 komut.Parameters.AddWithValue("@p3", txtTC.Text);
                 komut.Parameters.AddWithValue("@p4", txtMaas.Text);
 
-                // 2. ComboBox'tan seçilen departmanı veritabanına gönderiyoruz
+               
                 komut.Parameters.AddWithValue("@p5", cmbDepartman.Text);
 
                 komut.ExecuteNonQuery();
                 baglanti.Close();
 
                 MessageBox.Show("eklendi");
-                Listele(); // Tabloyu anında güncelle
+                Listele(); 
             }
             catch (Exception hata)
             {
@@ -111,44 +111,44 @@ namespace PersonelTakip
         {
             try
             {
-                // 1. GÜVENLİK KONTROLÜ: Tablodan bir satır seçilmiş mi?
+
                 if (dataGridView1.CurrentRow == null)
                 {
                     MessageBox.Show("Lütfen önce tablodan güncellenecek personeli seçin!");
                     return;
                 }
 
-                // 2. GİZLİ ID ALMA: Seçili satırın ilk hücresindeki (0. sütun) ID'yi alıyoruz
+
                 int seciliId = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
 
                 if (baglanti.State == ConnectionState.Closed) baglanti.Open();
 
-                // 3. SQL KOMUTU: Departman (@p5) ve WHERE Id (@p6) dahil edildi
+
                 SqlCommand komut = new SqlCommand("UPDATE Personeller SET Ad=@p1, Soyad=@p2, TCNo=@p3, Maas=@p4, Departman=@p5 WHERE Id=@p6", baglanti);
 
-                // Parametreleri dolduruyoruz
+
                 komut.Parameters.AddWithValue("@p1", txtAd.Text);
                 komut.Parameters.AddWithValue("@p2", txtSoyad.Text);
                 komut.Parameters.AddWithValue("@p3", txtTC.Text);
 
-                // Maaş için TR formatı koruması (Nokta-Virgül hatası olmasın diye)
+
                 decimal maas = 0;
                 if (!string.IsNullOrEmpty(txtMaas.Text)) maas = Convert.ToDecimal(txtMaas.Text.Replace(".", ","));
                 komut.Parameters.AddWithValue("@p4", maas);
 
-                // ComboBox'tan gelen modern teknoloji departmanı
+
                 komut.Parameters.AddWithValue("@p5", cmbDepartman.Text);
 
-                // İşte o "gizli" ID'yi SQL'e gönderdiğimiz yer
+
                 komut.Parameters.AddWithValue("@p6", seciliId);
 
-                // 4. ÇALIŞTIRMA VE KAPATMA
+
                 komut.ExecuteNonQuery();
                 baglanti.Close();
 
                 MessageBox.Show("Personel ve departman bilgisi başarıyla güncellendi! 🚀");
 
-                Listele(); // Tabloyu anında tazele ki değişikliği görelim
+                Listele();
             }
             catch (Exception hata)
             {
@@ -165,25 +165,24 @@ namespace PersonelTakip
         {
             try
             {
-                // 1. KONTROL: Tablodan bir satır seçilmiş mi?
                 if (dataGridView1.CurrentRow == null)
                 {
                     MessageBox.Show("Lütfen silmek istediğiniz personeli tablodan seçin!");
                     return;
                 }
 
-                // 2. ADIM: Seçili satırdaki ID'yi alıyoruz (Genelde 0. sütundur)
+              
                 int seciliId = Convert.ToInt32(dataGridView1.CurrentRow.Cells[0].Value);
                 string personelAd = dataGridView1.CurrentRow.Cells[1].Value.ToString();
 
-                // 3. ADIM: Onay isteyelim
+                
                 DialogResult onay = MessageBox.Show(personelAd + " isimli personeli silmek istediğinize emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
                 if (onay == DialogResult.Yes)
                 {
                     if (baglanti.State == ConnectionState.Closed) baglanti.Open();
 
-                    // SQL Komutu
+                    
                     SqlCommand komut = new SqlCommand("DELETE FROM Personeller WHERE Id=@p1", baglanti);
                     komut.Parameters.AddWithValue("@p1", seciliId);
 
@@ -191,7 +190,7 @@ namespace PersonelTakip
                     baglanti.Close();
 
                     MessageBox.Show("Kayıt başarıyla silindi! 🗑️");
-                    Listele(); // Tabloyu güncelle
+                    Listele();
                 }
             }
             catch (Exception hata)
