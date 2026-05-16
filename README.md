@@ -16,3 +16,5 @@ Bu proje, C# Windows Forms ve MS SQL Server kullanılarak geliştirilmiş, moder
 
 ## 📸 Ekran Görüntüsü ve Kullanım
 *Sistemin arayüz tasarımı ve çalışan hali aşağıda yer almaktadır:*
+<img width="924" height="621" alt="image" src="https://github.com/user-attachments/assets/e58b5056-777b-47ff-b7d9-ec3f371af53e" />
+<img width="778" height="510" alt="Ekran görüntüsü 2026-05-16 181321" src="https://github.com/user-attachments/assets/c51991f8-3036-437f-9243-6e984a680537" />
